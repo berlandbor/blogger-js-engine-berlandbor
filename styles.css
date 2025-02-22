@@ -1,0 +1,214 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    max-width: 800px;
+}
+
+/* Оглавление (меню содержания) */
+#toc-container {
+    width: 100%;
+    max-width: 300px; /* Ограничиваем ширину */
+    max-height: 300px; /* Ограничиваем высоту */
+    overflow-y: auto; /* Добавляем вертикальную прокрутку */
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+#toc-container h2 {
+    text-align: center;
+}
+
+#toc ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#toc li {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+#toc a {
+    text-decoration: none;
+    color: #007bff;
+    cursor: pointer;
+}
+
+#toc a:hover {
+    text-decoration: underline;
+}
+
+/* Стили для статей */
+.post {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+/* Кнопки пагинации */
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Поле поиска */
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    position: relative;
+    width: 100%;
+    max-width: 400px; /* Ограничиваем ширину */
+}
+
+.search-container input {
+    width: 100%;
+    padding: 12px 40px 12px 15px; /* Пространство слева и справа */
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 25px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.search-container input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+/* Иконка 🔍 */
+.search-container::after {
+    content: "🔍";
+    font-size: 18px;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    pointer-events: none; /* Не кликабельна */
+}
+
+
+
+    /* Заголовки */
+    h1, h2, h3 {
+        color: #222;
+        margin-top: 20px;
+    }
+
+    h1 {
+        font-size: 2rem;
+        border-bottom: 3px solid #007BFF;
+        padding-bottom: 5px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+        border-left: 4px solid #007BFF;
+        padding-left: 8px;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+        color: #555;
+    }
+
+    /* Текстовые элементы */
+    p {
+        margin-bottom: 16px;
+    }
+
+    a {
+        color: #007BFF;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    /* Списки */
+    ul, ol {
+        padding-left: 20px;
+        margin-bottom: 16px;
+    }
+
+    /* Цитаты */
+    blockquote {
+        border-left: 4px solid #ccc;
+        padding-left: 15px;
+        color: #666;
+        font-style: italic;
+        background: #f4f4f4;
+        margin: 16px 0;
+    }
+
+    /* Кодовые блоки */
+    pre, code {
+        background: #f4f4f4;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-family: 'Courier New', monospace;
+    }
+
+    pre {
+        margin-bottom: 16px;
+    }
+
+    /* Медиа-контент */
+    img, video, iframe {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 16px auto;
+    }
+
+    audio {
+        width: 100%;
+        margin: 16px 0;
+    }
+
+    /* Горизонтальная линия */
+    hr {
+        border: none;
+        border-top: 2px solid #eee;
+        margin: 24px 0;
+    }
+
+    /* Кнопки */
+    button {
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Плавный скролл */
+    html {
+        scroll-behavior: smooth;
+    }
