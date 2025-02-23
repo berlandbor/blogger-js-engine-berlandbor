@@ -15,6 +15,34 @@
         <div id="toc"></div>
     </div><hr>
 
+<!-- 🌟 Модальное окно настроек озвучки -->
+<div id="speechModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h2>Настройки озвучки</h2>
+
+        <label for="languageSelect">Язык:</label>
+        <select id="languageSelect"></select>
+
+        <label for="voiceSelect">Голос:</label>
+        <select id="voiceSelect"></select>
+
+        <label for="rateInput">Скорость: <span id="rateValue">1</span></label>
+        <input type="range" id="rateInput" min="0.5" max="2" step="0.1" value="1">
+
+        <label for="pitchInput">Тональность: <span id="pitchValue">1</span></label>
+        <input type="range" id="pitchInput" min="0.5" max="2" step="0.1" value="1">
+
+        <button id="startSpeech">🔊 Начать озвучку</button>
+        <button id="stopSpeech">⏹ Остановить</button>
+    </div>
+</div>
+
+
+
+
+
+
     <!-- Поле поиска -->
     <!-- Красивое поле поиска -->
 <div class="search-container">
@@ -32,6 +60,7 @@
 
 <p>© berlandbor</p>
 
+    <script src="main/speech.js"></script>
     <script src="main/linkify.js"></script>
     <script src="main/CoreBlog.js"></script>
 
