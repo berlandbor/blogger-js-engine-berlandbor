@@ -1,4 +1,4 @@
-// CoreBlog.js с Lazy Loading, кэшированием с TTL, индикатором загрузки и модальным окном для озвучки
+// CoreBlog.js с Lazy Loading, индикатором загрузки и модальным окном для озвучки (без кэширования)
 
 document.addEventListener("DOMContentLoaded", async () => {
     const postsListFile = "posts/list.txt";
@@ -40,33 +40,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadingIndicator.style.display = "none";
     }
 
-    // Очистка устаревшего кэша
-    function clearExpiredCache(ttl = 3 * 24 * 60 * 60 * 1000) { // 3 дня
-        const now = new Date().getTime();
-        let clearedCount = 0;
-
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            const cachedData = localStorage.getItem(key);
-
-            if (cachedData) {
-                try {
-                    const { cachedAt } = JSON.parse(cachedData);
-                    if (now - cachedAt > ttl) {
-                        localStorage.removeItem(key);
-                        clearedCount++;
-                    }
-                } catch (e) {
-                    // Игнорируем некорректные данные
-                }
-            }
-        }
-
-        if (clearedCount > 0) {
-            console.log(`🗑️ Очищено устаревших записей: ${clearedCount}`);
-        }
-    }
-
     // Загрузка списка файлов
     async function loadPostList() {
         showLoading();
@@ -85,26 +58,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Загрузка статей с ленивой подгрузкой и кэшированием с TTL
+    // Загрузка статей без кэширования
     async function loadAllPosts(postFiles) {
         allPosts = [];
-        const TTL = 3 * 24 * 60 * 60 * 1000; // 3 дня
 
         for (const file of postFiles) {
             try {
-                const cachedData = localStorage.getItem(file);
-                if (cachedData) {
-                    const { post, cachedAt } = JSON.parse(cachedData);
-                    const now = new Date().getTime();
-
-                    if (now - cachedAt < TTL) {
-                        allPosts.push(post); // Кэш свежий
-                        continue;
-                    } else {
-                        localStorage.removeItem(file); // Удаляем устаревший кэш
-                    }
-                }
-
                 const response = await fetch(file);
                 if (!response.ok) throw new Error(`Ошибка загрузки: ${file}`);
                 const text = await response.text();
@@ -117,10 +76,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const post = { title, date, content, file };
 
                 allPosts.push(post);
-                localStorage.setItem(file, JSON.stringify({
-                    post,
-                    cachedAt: new Date().getTime()
-                }));
             } catch (error) {
                 console.error(error);
             }
@@ -269,9 +224,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             displayPosts();
         }
     });
-
-    // Очистка устаревшего кэша при загрузке страницы
-    clearExpiredCache();
 
     // Загружаем статьи
     await loadPostList();
