@@ -96,6 +96,75 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         tocContainer.innerHTML += "</ul>";
     }
+    
+    function generateMetaTags(post) {
+    const head = document.getElementsByTagName('head')[0];
+
+    // Удаляем старые OG метатеги
+    const existingMeta = head.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"]');
+    existingMeta.forEach(meta => meta.remove());
+
+    // Определяем превью (изображение или видео)
+    let previewImage = '';
+    let previewVideo = '';
+
+    const imageRegex = /(https?:\/\/[^\s]+?\.(jpg|jpeg|png|gif|webp))/i;
+    const videoRegex = /(https?:\/\/[^\s]+?\.(mp4|webm|ogg))/i;
+
+    const imageMatch = post.content.match(imageRegex);
+    const videoMatch = post.content.match(videoRegex);
+
+    if (imageMatch) {
+        previewImage = imageMatch[1];
+    }
+
+    if (videoMatch) {
+        previewVideo = videoMatch[1];
+    }
+
+    // Open Graph метатеги
+    const ogTags = [
+        { property: 'og:title', content: post.title },
+        { property: 'og:description', content: post.content.substring(0, 150) + '...' },
+        { property: 'og:url', content: window.location.href },
+        { property: 'og:type', content: previewVideo ? 'video.other' : 'article' },
+    ];
+
+    if (previewImage) {
+        ogTags.push({ property: 'og:image', content: previewImage });
+    }
+
+    if (previewVideo) {
+        ogTags.push({ property: 'og:video', content: previewVideo });
+        ogTags.push({ property: 'og:video:type', content: `video/${previewVideo.split('.').pop()}` });
+        ogTags.push({ property: 'og:video:width', content: '640' });
+        ogTags.push({ property: 'og:video:height', content: '360' });
+    }
+
+    // Twitter Card метатеги
+    const twitterTags = [
+        { name: 'twitter:card', content: previewImage ? 'summary_large_image' : 'summary' },
+        { name: 'twitter:title', content: post.title },
+        { name: 'twitter:description', content: post.content.substring(0, 150) + '...' },
+        { name: 'twitter:url', content: window.location.href },
+    ];
+
+    if (previewImage) {
+        twitterTags.push({ name: 'twitter:image', content: previewImage });
+    }
+
+    // Добавляем метатеги в head
+    [...ogTags, ...twitterTags].forEach(tagData => {
+        const meta = document.createElement('meta');
+        if (tagData.property) {
+            meta.setAttribute('property', tagData.property);
+        } else {
+            meta.setAttribute('name', tagData.name);
+        }
+        meta.setAttribute('content', tagData.content);
+        head.appendChild(meta);
+    });
+}
 
     // Отображение постов
     function displayPosts() {
@@ -130,6 +199,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <hr>
             `;
             blogContainer.appendChild(article);
+            // Генерация метатегов для соцсетей
+             generateMetaTags(post);
         });
 
         pageNumber.textContent = `Страница ${currentPage}`;
