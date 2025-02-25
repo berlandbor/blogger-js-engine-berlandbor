@@ -131,11 +131,15 @@ if (/\.m3u8(\?.*)?$/.test(hyperlink)) {
         .replace(/^---$/gm, '<hr>')
         // Цитаты
         .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-        // Нумерованные списки
-        .replace(/(^\d+\..+(?:\n\d+\..+)*)/gm, (match) => {
-            const items = match.split('\n').map(item => item.replace(/^\d+\. (.+)$/, '<li>$1</li>')).join('');
-            return `<ol>${items}</ol>`;
-        })
+
+        // Заменяем нумерацию на маркеры
+.replace(/(^\s*\d+\.\s+.+(?:\n|$))/gm, (match) => {
+    const items = match.trim().split('\n').map(item => {
+        return item.replace(/^\s*\d+\.\s+(.+)$/, '<li>$1</li>');
+    }).join('');
+    return `<ul>${items}</ul>`; // Используем маркированный список <ul>
+})
+
         // Маркированные списки
         .replace(/(^- .+(?:\n- .+)*)/gm, (match) => {
             const items = match.split('\n').map(item => item.replace(/^- (.+)$/, '<li>$1</li>')).join('');
