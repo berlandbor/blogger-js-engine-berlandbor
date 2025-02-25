@@ -4,13 +4,25 @@ function linkify(text) {
     return text.replace(urlRegex, (url) => {
         const hyperlink = url.startsWith('http') ? url : `https://${url}`;
 
-        // === Проверка на Google Drive ===
+  // === Проверка на Google Drive ===
         const googleDriveMatch = hyperlink.match(/https?:\/\/drive\.google\.com\/file\/d\/([^/]+)\//);
         if (googleDriveMatch && googleDriveMatch[1]) {
             const fileId = googleDriveMatch[1];
             const directLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
 
-            // Определяем тип файла по расширению или по ключевым словам
+            // Проверка на /preview
+            if (hyperlink.includes('/preview')) {
+                return `
+                    <div style="position: relative; max-width: 90%; text-align: center; margin: auto;">
+                        <iframe src="https://drive.google.com/file/d/${fileId}/preview" 
+                                allow="autoplay" allowfullscreen style="display: block; margin: 0 auto; width: 90%; height: 580px;"></iframe>
+                        <button onclick="openFullScreen('gdrive-${fileId}')" style="margin-top: 2px; background-color: rgba(0, 0, 0, 0.7); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 16px;">
+                            Полный экран
+                        </button>
+                    </div>`;
+            }
+
+            // Определяем тип файла
             if (/\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(hyperlink) || hyperlink.includes("image")) {
                 return `<img src="${directLink}" alt="Google Drive Image" style="max-width:100%; height:auto; display: block; margin: 5px auto;">`;
             }
@@ -32,7 +44,7 @@ function linkify(text) {
                         </audio>`;
             }
 
-            // Если не удалось определить тип, предлагаем скачать
+            // Если тип неизвестен — даем ссылку для скачивания
             return `<a href="${directLink}" target="_blank" rel="noopener noreferrer">Скачать файл с Google Диска</a>`;
         }
 
