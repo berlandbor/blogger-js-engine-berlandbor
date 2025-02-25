@@ -4,13 +4,36 @@ function linkify(text) {
     return text.replace(urlRegex, (url) => {
         const hyperlink = url.startsWith('http') ? url : `https://${url}`;
 
-        // === Проверка на изображение с Google Диска ===
+        // === Проверка на Google Drive ===
         const googleDriveMatch = hyperlink.match(/https?:\/\/drive\.google\.com\/file\/d\/([^/]+)\//);
         if (googleDriveMatch && googleDriveMatch[1]) {
             const fileId = googleDriveMatch[1];
-            const directLink = `https://drive.google.com/uc?export=view&id=${fileId}`;
-            
-            return `<img src="${directLink}" alt="Google Drive Image" style="max-width:100%; height:auto; display: block; margin: 5px auto;">`;
+            const directLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+            // Определяем тип файла по расширению или по ключевым словам
+            if (/\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(hyperlink) || hyperlink.includes("image")) {
+                return `<img src="${directLink}" alt="Google Drive Image" style="max-width:100%; height:auto; display: block; margin: 5px auto;">`;
+            }
+
+            if (/\.(mp4|webm|ogg)$/i.test(hyperlink) || hyperlink.includes("video")) {
+                return `
+                    <div style="position: relative; max-width: 100%; text-align: center;">
+                        <video controls style="max-width:100%; height:auto;">
+                            <source src="${directLink}" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                    </div>`;
+            }
+
+            if (/\.(mp3|wav|ogg|aacp)$/i.test(hyperlink) || hyperlink.includes("audio")) {
+                return `<audio controls style="width:100%;">
+                            <source src="${directLink}" type="audio/mpeg">
+                            Ваш браузер не поддерживает аудио.
+                        </audio>`;
+            }
+
+            // Если не удалось определить тип, предлагаем скачать
+            return `<a href="${directLink}" target="_blank" rel="noopener noreferrer">Скачать файл с Google Диска</a>`;
         }
 
         // === Проверка на стандартные изображения (.png, .jpg, .gif и т.д.) ===
