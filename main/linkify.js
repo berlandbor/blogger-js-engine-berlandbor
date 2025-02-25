@@ -3,50 +3,52 @@ function linkify(text) {
 
     return text.replace(urlRegex, (url) => {
         const hyperlink = url.startsWith('http') ? url : `https://${url}`;
+            // === GOOGLE DRIVE SUPPORT ===
+            const googleDriveMatch = hyperlink.match(/https?:\/\/drive\.google\.com\/file\/d\/([^/]+)\//);
+            if (googleDriveMatch && googleDriveMatch[1]) {
+                const fileId = googleDriveMatch[1];
 
-  // === Проверка на Google Drive ===
-        const googleDriveMatch = hyperlink.match(/https?:\/\/drive\.google\.com\/file\/d\/([^/]+)\//);
-        if (googleDriveMatch && googleDriveMatch[1]) {
-            const fileId = googleDriveMatch[1];
-            const directLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                if (hyperlink.includes('/preview')) {
+                    return `
+                        <div style="position: relative; max-width: 90%; text-align: center; margin: auto;">
+                            <iframe id="gdrive-${fileId}" src="https://drive.google.com/file/d/${fileId}/preview" 
+                                     allow="autoplay" allowfullscreen style="display: block; margin: 0 auto; width: 90%; height: 580px;"></iframe>
+                            <button onclick="openFullScreen('gdrive-${fileId}')" style="margin-top: 2px; background-color: rgba(0, 0, 0, 0.7); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 16px;">
+                                Полный экран
+                            </button>
+                        </div>`;
+                }
 
-            // Проверка на /preview
-            if (hyperlink.includes('/preview')) {
-                return `
-                    <div style="position: relative; max-width: 90%; text-align: center; margin: auto;">
-                        <iframe src="https://drive.google.com/file/d/${fileId}/preview" 
-                                allow="autoplay" allowfullscreen style="display: block; margin: 0 auto; width: 90%; height: 580px;"></iframe>
-                        <button onclick="openFullScreen('gdrive-${fileId}')" style="margin-top: 2px; background-color: rgba(0, 0, 0, 0.7); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 16px;">
-                            Полный экран
-                        </button>
-                    </div>`;
+                const directLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+                if (/\.(mp4|webm|ogg)$/i.test(hyperlink) || hyperlink.includes("video")) {
+                    return `
+                        <div style="position: relative; max-width: 100%; text-align: center;">
+                            <video id="video-${fileId}" controls style="max-width:100%; height:auto;">
+                                <source src="${directLink}" type="video/mp4">
+                                Ваш браузер не поддерживает видео.
+                            </video>
+                            <button onclick="openFullScreen('video-${fileId}')" style="margin-top: 5px; background-color: rgba(0, 0, 0, 0.7); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 16px;">
+                                Полный экран
+                            </button>
+                        </div>`;
+                }
+
+                if (/\.(mp3|wav|ogg|aacp)$/i.test(hyperlink) || hyperlink.includes("audio")) {
+                    return `<audio controls style="width:100%;">
+                                <source src="${directLink}" type="audio/mpeg">
+                                Ваш браузер не поддерживает аудио.
+                            </audio>`;
+                }
+
+                if (/\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(hyperlink) || hyperlink.includes("image")) {
+                    return `<img src="${directLink}" alt="Image" style="max-width:100%; height:auto;">`;
+                }
+
+                return `<a href="${directLink}" target="_blank" rel="noopener noreferrer">Скачать файл с Google Диска</a>`;
             }
 
-            // Определяем тип файла
-            if (/\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(hyperlink) || hyperlink.includes("image")) {
-                return `<img src="${directLink}" alt="Google Drive Image" style="max-width:100%; height:auto; display: block; margin: 5px auto;">`;
-            }
 
-            if (/\.(mp4|webm|ogg)$/i.test(hyperlink) || hyperlink.includes("video")) {
-                return `
-                    <div style="position: relative; max-width: 100%; text-align: center;">
-                        <video controls style="max-width:100%; height:auto;">
-                            <source src="${directLink}" type="video/mp4">
-                            Ваш браузер не поддерживает видео.
-                        </video>
-                    </div>`;
-            }
-
-            if (/\.(mp3|wav|ogg|aacp)$/i.test(hyperlink) || hyperlink.includes("audio")) {
-                return `<audio controls style="width:100%;">
-                            <source src="${directLink}" type="audio/mpeg">
-                            Ваш браузер не поддерживает аудио.
-                        </audio>`;
-            }
-
-            // Если тип неизвестен — даем ссылку для скачивания
-            return `<a href="${directLink}" target="_blank" rel="noopener noreferrer">Скачать файл с Google Диска</a>`;
-        }
 
         // === Проверка на стандартные изображения (.png, .jpg, .gif и т.д.) ===
         if (/\.(jpg|jpeg|png|gif|bmp|webp)(\?.*)?$/i.test(hyperlink)) {
@@ -117,12 +119,13 @@ function linkify(text) {
     .replace(/^---$/gm, '<hr>')
     .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
     // Нумерованные списки
-    .replace(/(^\s*\d+\.\s+.+(?:\n|$))/gm, (match) => {
-        const items = match.trim().split('\n').map(item => {
-            return item.replace(/^\s*\d+\.\s+(.+)$/, '<li>$1</li>');
-        }).join('');
-        return `<ol>${items}</ol>`;
-    })
+    // Заменяем нумерацию на маркеры
+.replace(/(^\s*\d+\.\s+.+(?:\n|$))/gm, (match) => {
+    const items = match.trim().split('\n').map(item => {
+        return item.replace(/^\s*\d+\.\s+(.+)$/, '<li>$1</li>');
+    }).join('');
+    return `<ul>${items}</ul>`; // Используем маркированный список <ul>
+})
     // Маркированные списки
     .replace(/(^- .+(?:\n- .+)*)/gm, (match) => {
         const items = match.split('\n').map(item => item.replace(/^- (.+)$/, '<li>$1</li>')).join('');
@@ -142,13 +145,21 @@ function linkify(text) {
 // === Функция для открытия полного экрана ===
 function openFullScreen(elementId) {
     const element = document.getElementById(elementId);
+    
+    if (!element) {
+        console.error(`Element with ID ${elementId} not found.`);
+        return;
+    }
+
     if (element.requestFullscreen) {
         element.requestFullscreen();
-    } else if (element.mozRequestFullScreen) {
+    } else if (element.mozRequestFullScreen) { // Firefox
         element.mozRequestFullScreen();
-    } else if (element.webkitRequestFullscreen) {
+    } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
         element.webkitRequestFullscreen();
-    } else if (element.msRequestFullscreen) {
+    } else if (element.msRequestFullscreen) { // IE/Edge
         element.msRequestFullscreen();
+    } else {
+        alert("Ваш браузер не поддерживает полноэкранный режим.");
     }
 }
