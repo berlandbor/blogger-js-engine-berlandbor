@@ -54,8 +54,12 @@ function filterVoicesByLanguage() {
         });
 }
 
-// Функция для очистки текста от смайликов и знаков препинания
+// Функция для очистки текста от смайликов, знаков препинания и ссылок
 function cleanText(text) {
+    // Удаляем ссылки (HTTP, HTTPS, WWW и любые URL-адреса)
+    text = text.replace(/https?:\/\/\S+|www\.\S+/gi, ''); // Удаляет URL-адреса
+    text = text.replace(/\b(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?/gi, ''); // Удаляет домены (example.com)
+
     // Удаляем смайлики (по диапазонам Unicode)
     text = text.replace(/[\u{1F600}-\u{1F64F}]/gu, ''); // Смайлики
     text = text.replace(/[\u{1F300}-\u{1F5FF}]/gu, ''); // Символы и пиктограммы
@@ -63,8 +67,8 @@ function cleanText(text) {
     text = text.replace(/[\u{2600}-\u{26FF}]/gu, '');   // Разные символы
     text = text.replace(/[\u{2700}-\u{27BF}]/gu, '');   // Dingbats
 
-    // Удаляем знаки препинания и спецсимволы, оставляем буквы и цифры
-    text = text.replace(/[^\w\sа-яА-ЯёЁ0-9.,!?]/g, '');
+    // Удаляем знаки препинания и спецсимволы, оставляем буквы, цифры и стандартные знаки препинания
+   // text = text.replace(/[^\w\sа-яА-ЯёЁ0-9.,!?]/g, '');
 
     // Убираем лишние пробелы
     return text.replace(/\s+/g, ' ').trim();
