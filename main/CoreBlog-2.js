@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const title = event.target.getAttribute("data-title");
                 const content = event.target.getAttribute("data-content");
                 const pageUrl = event.target.getAttribute("data-url");
-                const shareText = `📝 ${title}\n\n${content}\n\n🔗 Читать полностью: ${pageUrl}`;
+                const shareText = `📝 ${title}\n\n${content}\n\n🔗 Читать полностью:`; //${pageUrl}`;
 
                 if (navigator.share) {
                     navigator.share({
