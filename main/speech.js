@@ -57,9 +57,11 @@ function filterVoicesByLanguage() {
 // Функция для очистки текста от смайликов, знаков препинания и ссылок
 
 function cleanText(text, filterChars = ['*','**', '***']) {
-    // Удаляем ссылки (HTTP, HTTPS, WWW и любые URL-адреса)
-    text = text.replace(/https?:\/\/\S+|www\.\S+/gi, ''); // Удаляет URL-адреса
-    text = text.replace(/\b(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?/gi, ''); // Удаляет домены (example.com)
+    // Регулярное выражение для удаления ссылок (http, https, www)
+    text = text.replace(/https?:\/\/\S+|www\.\S+/gi, ''); 
+
+    // Удаляем только домены, но сохраняем слова с точкой (node.js, script.py)
+    text = text.replace(/\b(?:[a-zA-Z0-9-]+\.){2,}[a-zA-Z]{2,}(\/\S*)?/gi, '');
 
     // Удаляем смайлики (по диапазонам Unicode)
     text = text.replace(/[\u{1F600}-\u{1F64F}]/gu, ''); // Смайлики
