@@ -131,10 +131,25 @@ function linkify(text) {
         const items = match.split('\n').map(item => item.replace(/^- (.+)$/, '<li>$1</li>')).join('');
         return `<ul>${items}</ul>`;
     })
-    // Жирный текст
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    // Курсив
-    .replace(/(^|[^*])\*(?!\s)(.+?)(?!\s)\*(?!\*)/g, '$1<em>$2</em>')
+        // **Жирный** текст
+  .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  .replace(/__(.+?)__/g, '<strong>$1</strong>')
+
+  // *Курсив*
+  .replace(/(^|[^*])\*(?!\s)(.+?)(?!\s)\*(?!\*)/g, '$1<em>$2</em>')
+  .replace(/(^|[^_])_(?!\s)(.+?)(?!\s)_(?!_)/g, '$1<em>$2</em>')
+
+  // ***Жирный курсив***
+  .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+  .replace(/___(.+?)___/g, '<strong><em>$1</em></strong>')
+
+  // _Подчеркнутый текст_
+  .replace(/\+\+(.+?)\+\+/g, '<u>$1</u>')
+  .replace(/~~(.+?)~~/g, '<u>$1</u>')
+
+  // Подчеркнутый абзац
+  .replace(/^\+\+(.*?)\+\+$/gm, '<u>$1</u>')
+
     // Кодовые блоки и строки
     .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
     .replace(/`(.+?)`/g, '<code>$1</code>')
